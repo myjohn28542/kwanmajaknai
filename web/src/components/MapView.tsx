@@ -20,6 +20,7 @@ import {
   puffFractions,
   smoothstep,
 } from "../lib/geo3d";
+import { pmIndex, SKIES } from "../lib/island";
 import type { HotspotPoint, Snapshot, TambonSummary } from "../lib/types";
 
 // MapLibre 6 loads its worker from a sibling file next to the module; point it at the
@@ -70,6 +71,8 @@ type Props = {
   snapshot: Snapshot | null;
   hotspots: HotspotPoint[];
   mode?: MapMode;
+  /** PM2.5 at the tambon; tints the 3D sky and thickens the horizon haze */
+  pm?: number | null;
   onPick?: (lat: number, lon: number) => void;
   interactive?: boolean;
   onIdle?: () => void;
@@ -267,21 +270,26 @@ const point = (lon: number, lat: number, props: Record<string, unknown> = {}): G
   geometry: { type: "Point", coordinates: [lon, lat] },
 });
 
-const SKY = {
-  "sky-color": "#9cc7f0",
-  "horizon-color": "#eef4fb",
-  "fog-color": "#f4f1ea",
-  "sky-horizon-blend": 0.6,
-  "horizon-fog-blend": 0.6,
-  "fog-ground-blend": 0.4,
-  "atmosphere-blend": 0.6,
-};
+/** 3D sky from the same palette as the island card: dustier air = browner, closer haze. */
+function skyFor(pm: number | null) {
+  const i = pmIndex(pm);
+  const s = SKIES[i];
+  return {
+    "sky-color": s.top,
+    "horizon-color": s.bottom,
+    "fog-color": s.haze,
+    "sky-horizon-blend": 0.6,
+    "horizon-fog-blend": 0.5 + 0.1 * i,
+    "fog-ground-blend": 0.45 - 0.08 * i, // lower = fog reaches closer to the camera
+    "atmosphere-blend": 0.6,
+  };
+}
 
-function applyMode(map: MlMap, mode: MapMode) {
+function applyMode(map: MlMap, mode: MapMode, pm: number | null) {
   const is3d = mode === "3d";
   const vis = (id: string, on: boolean) => map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
   map.setTerrain(is3d ? { source: "dem-terrain", exaggeration: EXAGGERATION } : null);
-  map.setSky((is3d ? SKY : {}) as never);
+  map.setSky((is3d ? skyFor(pm) : {}) as never);
   vis("hillshade", is3d);
   vis("relief", is3d);
   vis("columns", is3d);
@@ -296,6 +304,7 @@ export function MapView({
   snapshot,
   hotspots,
   mode = "2d",
+  pm = null,
   onPick,
   interactive = true,
   onIdle,
@@ -308,8 +317,8 @@ export function MapView({
   const mapRef = useRef<MlMap | null>(null);
   const ready = useRef(false);
   const labels = useRef<Marker[]>([]);
-  const latest = useRef({ tambons, selected, snapshot, hotspots, mode });
-  latest.current = { tambons, selected, snapshot, hotspots, mode };
+  const latest = useRef({ tambons, selected, snapshot, hotspots, mode, pm });
+  latest.current = { tambons, selected, snapshot, hotspots, mode, pm };
   const pickRef = useRef(onPick);
   pickRef.current = onPick;
   const sampler = useRef<((f: number) => [number, number]) | null>(null);
@@ -322,8 +331,8 @@ export function MapView({
   const render = () => {
     const map = mapRef.current;
     if (!map || !ready.current) return;
-    const { tambons, selected, snapshot, hotspots, mode } = latest.current;
-    applyMode(map, mode);
+    const { tambons, selected, snapshot, hotspots, mode, pm } = latest.current;
+    applyMode(map, mode, pm);
     setData(map, "tambons", fc(tambons.map((t) => point(t.lon, t.lat))));
     setData(map, "hotspots", fc(hotspots.map(([lon, lat, frp, age]) => point(lon, lat, { frp, age }))));
     setData(

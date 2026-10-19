@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Footer } from "./components/Footer";
+import { IslandCard } from "./components/IslandCard";
 import { ResultCard } from "./components/ResultCard";
 import { ShareButtons } from "./components/ShareButtons";
 import { TambonSearch } from "./components/TambonSearch";
@@ -78,6 +79,8 @@ export default function App() {
   const times = index?.times ?? [];
   const t = times[Math.min(timeIdx, times.length - 1)];
   const snapshot = (doc?.id === id && doc.snapshots.find((s) => s.t === t)) || null;
+  const tPrev = times[Math.min(timeIdx, times.length - 1) + 3];
+  const previousPm = doc?.id === id ? (doc.snapshots.find((s) => s.t === tPrev)?.pm25 ?? null) : null;
   const offset = hot?.t && t ? hoursBetween(hot.t, t) : 0;
   const shownHot = useMemo(() => (hot ? hotspotsAt(hot.points, offset) : []), [hot, offset]);
 
@@ -154,6 +157,7 @@ export default function App() {
               {geoMsg ?? "ตำแหน่งใช้ในเครื่องของคุณเท่านั้น ไม่ถูกส่งไปที่ไหน"}
             </p>
           </div>
+          {tambon && <IslandCard tambon={tambon} snapshot={snapshot} previousPm={previousPm} />}
           {tambon && (
             <ResultCard
               tambon={tambon}
@@ -182,6 +186,7 @@ export default function App() {
                 snapshot={snapshot}
                 hotspots={shownHot}
                 mode={mode}
+                pm={snapshot?.pm25 ?? null}
                 onPick={onPick}
                 userLoc={me}
                 playToken={playToken}
