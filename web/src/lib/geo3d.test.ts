@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { columnHeightM, columnPolygon, pathSampler, puffFractions } from "./geo3d";
+import {
+  bearingDeg,
+  columnHeightM,
+  columnPolygon,
+  lerpBearing,
+  pathSampler,
+  puffFractions,
+  smoothstep,
+} from "./geo3d";
 
 describe("columnPolygon", () => {
   it("is a closed square of the requested size", () => {
@@ -49,5 +57,30 @@ describe("puffFractions", () => {
     expect(puffFractions(4, 0)).toEqual([0, 0.25, 0.5, 0.75]);
     expect(puffFractions(2, 0.75)).toEqual([0.75, 0.25]);
     expect(puffFractions(2, -0.25)).toEqual([0.75, 0.25]);
+  });
+});
+
+describe("bearingDeg", () => {
+  it("gives compass bearings", () => {
+    expect(bearingDeg([100, 20], [100, 21])).toBeCloseTo(0, 6);
+    expect(bearingDeg([100, 20], [101, 20])).toBeCloseTo(90, 6);
+    expect(bearingDeg([100, 20], [100, 19])).toBeCloseTo(180, 6);
+    expect(bearingDeg([100, 20], [99, 20])).toBeCloseTo(270, 6);
+  });
+});
+
+describe("lerpBearing", () => {
+  it("turns the short way across north", () => {
+    expect(lerpBearing(350, 10, 0.5)).toBeCloseTo(0, 6);
+    expect(lerpBearing(10, 350, 0.5)).toBeCloseTo(0, 6);
+    expect(lerpBearing(90, 180, 0.5)).toBeCloseTo(135, 6);
+  });
+});
+
+describe("smoothstep", () => {
+  it("is clamped and symmetric", () => {
+    expect(smoothstep(-1)).toBe(0);
+    expect(smoothstep(0.5)).toBe(0.5);
+    expect(smoothstep(2)).toBe(1);
   });
 });

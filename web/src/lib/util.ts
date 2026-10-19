@@ -92,6 +92,10 @@ export function lineShareUrl(text: string, url: string): string {
   return `https://line.me/R/share?text=${encodeURIComponent(`${text}\n${url}`)}`;
 }
 
+export function xShareUrl(text: string, url: string): string {
+  return `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+}
+
 export function facebookShareUrl(url: string): string {
   return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
 }

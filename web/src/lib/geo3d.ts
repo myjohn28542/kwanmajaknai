@@ -52,3 +52,22 @@ export function puffFractions(n: number, phase: number): number[] {
   const p = ((phase % 1) + 1) % 1;
   return Array.from({ length: n }, (_, i) => (i / n + p) % 1);
 }
+
+/** Compass bearing in degrees (0 = north, clockwise) from a to b. */
+export function bearingDeg(a: [number, number], b: [number, number]): number {
+  const k = Math.cos((((a[1] + b[1]) / 2) * Math.PI) / 180);
+  const deg = (Math.atan2((b[0] - a[0]) * k, b[1] - a[1]) * 180) / Math.PI;
+  return (deg + 360) % 360;
+}
+
+/** Interpolate between two bearings along the shorter arc. */
+export function lerpBearing(from: number, to: number, t: number): number {
+  const d = ((to - from + 540) % 360) - 180;
+  return (from + d * t + 360) % 360;
+}
+
+/** Smooth 0→1 easing with zero slope at both ends. */
+export const smoothstep = (t: number) => {
+  const x = Math.min(Math.max(t, 0), 1);
+  return x * x * (3 - 2 * x);
+};

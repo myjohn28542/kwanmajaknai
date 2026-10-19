@@ -24,6 +24,7 @@ const MapView = lazy(() => import("./components/MapView").then((m) => ({ default
 const ShareView = lazy(() => import("./components/ShareView").then((m) => ({ default: m.ShareView })));
 
 const PICK_MAX_KM = 25; // map clicks far outside Chiang Rai are ignored
+const GPS_MAX_KM = 20; // further than this from every tambon centroid = outside Chiang Rai
 const SHARE = new URLSearchParams(location.search).get("share") === "1";
 
 export default function App() {
@@ -44,6 +45,11 @@ export default function App() {
     save(next, MODE_KEY);
   };
   const [timeIdx, setTimeIdx] = useState(0);
+  const [me, setMe] = useState<[number, number] | null>(null);
+  const [geoMsg, setGeoMsg] = useState<string | null>(null);
+  const [playToken, setPlayToken] = useState(0);
+  const [stopToken, setStopToken] = useState(0);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     loadIndex().then(setIndex, (e) => setError(String(e)));
@@ -83,6 +89,44 @@ export default function App() {
     [tambons, select],
   );
 
+  // Position stays in the browser: it only picks the nearest tambon and draws a dot.
+  const locate = () => {
+    if (!navigator.geolocation) {
+      setGeoMsg("เบราว์เซอร์นี้ไม่รองรับการระบุตำแหน่ง เลือกตำบลจากรายการแทนได้");
+      return;
+    }
+    setGeoMsg("กำลังหาตำแหน่ง…");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude: lat, longitude: lon } }) => {
+        setMe([lon, lat]);
+        const n = nearestTambon(tambons, lat, lon);
+        if (n && haversineKm(lat, lon, n.lat, n.lon) <= GPS_MAX_KM) {
+          select(n.id);
+          setGeoMsg(`คุณอยู่ใกล้ ต.${n.name_th} อ.${n.amphoe_th}`);
+        } else {
+          setGeoMsg("ตำแหน่งของคุณอยู่นอกเชียงราย เลือกตำบลจากรายการแทนได้");
+        }
+      },
+      (err) =>
+        setGeoMsg(
+          err.code === err.PERMISSION_DENIED
+            ? "ไม่ได้รับอนุญาตให้ใช้ตำแหน่ง เปิดสิทธิ์ในการตั้งค่าเบราว์เซอร์ หรือเลือกตำบลเอง"
+            : "หาตำแหน่งไม่สำเร็จ ลองอีกครั้ง",
+        ),
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 600_000 },
+    );
+  };
+
+  const canPlay = (snapshot?.trajectory.length ?? 0) > 1;
+  const togglePlay = () => {
+    if (playing) {
+      setStopToken((n) => n + 1);
+      return;
+    }
+    setMode("3d"); // the flight is a 3D experience; not saved as the viewer's preference
+    setPlayToken((n) => n + 1);
+  };
+
   if (error) return <p className="error">โหลดข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง ({error})</p>;
 
   if (SHARE) {
@@ -102,6 +146,14 @@ export default function App() {
       <main className="layout">
         <div className="side">
           <TambonSearch tambons={tambons} selected={tambon} onSelect={select} />
+          <div className="locate">
+            <button type="button" className="btn locate-btn" onClick={locate} disabled={!tambons.length}>
+              📍 ใช้ตำแหน่งของฉัน
+            </button>
+            <p className="small muted" role="status">
+              {geoMsg ?? "ตำแหน่งใช้ในเครื่องของคุณเท่านั้น ไม่ถูกส่งไปที่ไหน"}
+            </p>
+          </div>
           {tambon && (
             <ResultCard
               tambon={tambon}
@@ -112,15 +164,40 @@ export default function App() {
               loading={!doc || doc.id !== id}
             />
           )}
-          {tambon && snapshot && <ShareButtons url={tambonUrl(location.origin, tambon.id)} text={snapshot.sentence} />}
+          {tambon && snapshot && (
+            <ShareButtons
+              url={tambonUrl(location.origin, tambon.id)}
+              text={snapshot.sentence}
+              imageUrl={`/data/${tambon.id}.png`}
+              fileName={`kwanmajaknai-${tambon.name_en.replace(/\W+/g, "-").toLowerCase() || tambon.id}.png`}
+            />
+          )}
         </div>
         <div className="map-wrap">
           <Suspense fallback={<div className="map map-loading">กำลังโหลดแผนที่…</div>}>
             <div className="map-box">
-              <MapView tambons={tambons} selected={tambon} snapshot={snapshot} hotspots={shownHot} mode={mode} onPick={onPick} />
-              <button type="button" className="mode-toggle" onClick={toggleMode} aria-pressed={mode === "3d"}>
-                {mode === "3d" ? "ดูแบบ 2D" : "ดูแบบ 3D"}
-              </button>
+              <MapView
+                tambons={tambons}
+                selected={tambon}
+                snapshot={snapshot}
+                hotspots={shownHot}
+                mode={mode}
+                onPick={onPick}
+                userLoc={me}
+                playToken={playToken}
+                stopToken={stopToken}
+                onPlayingChange={setPlaying}
+              />
+              <div className="map-actions">
+                <button type="button" className="mode-toggle" onClick={toggleMode} aria-pressed={mode === "3d"}>
+                  {mode === "3d" ? "ดูแบบ 2D" : "ดูแบบ 3D"}
+                </button>
+                {canPlay && (
+                  <button type="button" className="mode-toggle play" onClick={togglePlay} aria-pressed={playing}>
+                    {playing ? "■ หยุด" : "▶ ดูควันเดินทาง"}
+                  </button>
+                )}
+              </div>
             </div>
           </Suspense>
           <div className="legend small">
@@ -131,6 +208,7 @@ export default function App() {
             <span><i className="ln" />เส้นทางลมย้อนหลัง</span>
             <span><i className="puff" />ควันเคลื่อนตามลม</span>
             {mode === "3d" && <span>แท่ง = ไฟที่เป็นต้นควันหลัก (ยิ่งสูงยิ่งแรง)</span>}
+            {me && <span><i className="sw" style={{ background: "#16a34a" }} />ตำแหน่งของคุณ</span>}
           </div>
           <p className="small muted hint">แตะบนแผนที่เพื่อเลือกตำบลที่ใกล้ที่สุด</p>
         </div>

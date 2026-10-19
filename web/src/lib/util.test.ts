@@ -8,6 +8,7 @@ import {
   searchTambons,
   tambonFromLocation,
   thaiTime,
+  xShareUrl,
 } from "./util";
 
 const t = (id: string, name_th: string, amphoe_th: string, lat: number, lon: number, name_en = ""): TambonSummary => ({
@@ -66,6 +67,14 @@ describe("pmLevel", () => {
     expect(pmLevel(37.5)?.label).toBe("ปานกลาง");
     expect(pmLevel(37.6)?.label).toBe("เริ่มมีผลกระทบต่อสุขภาพ");
     expect(pmLevel(90)?.label).toBe("มีผลกระทบต่อสุขภาพ");
+  });
+});
+
+describe("xShareUrl", () => {
+  it("encodes text and url separately", () => {
+    expect(xShareUrl("a b", "https://x.dev/t/TH1")).toBe(
+      "https://x.com/intent/post?text=a%20b&url=https%3A%2F%2Fx.dev%2Ft%2FTH1",
+    );
   });
 });
 

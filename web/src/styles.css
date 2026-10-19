@@ -266,8 +266,44 @@ a {
   border-color: var(--fb-blue);
   color: #fff;
 }
-.share .btn:last-child {
+.share {
+  grid-template-columns: repeat(3, 1fr);
+}
+.share .btn.primary {
   grid-column: 1 / -1;
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.btn.x {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #fff;
+}
+.share .btn.copy,
+.share .share-note {
+  grid-column: 1 / -1;
+}
+.share-note {
+  margin: 0;
+  text-align: center;
+  color: var(--brand);
+}
+.locate {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.locate p {
+  margin: 0;
+}
+.locate-btn {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+.locate-btn:disabled {
+  opacity: 0.6;
 }
 
 /* map */
@@ -415,11 +451,19 @@ a {
 .map-box {
   position: relative;
 }
-.mode-toggle {
+.map-actions {
   position: absolute;
   top: 10px;
   left: 10px;
+  right: 56px;
   z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: none;
+}
+.mode-toggle {
+  pointer-events: auto;
   font: inherit;
   font-weight: 600;
   font-size: 0.9rem;
@@ -430,6 +474,13 @@ a {
   color: var(--brand);
   box-shadow: 0 2px 8px rgb(15 23 42 / 0.15);
   cursor: pointer;
+}
+.mode-toggle.play {
+  color: #9a3412;
+}
+.mode-toggle.play[aria-pressed="true"] {
+  background: #9a3412;
+  color: #fff;
 }
 .mode-toggle[aria-pressed="true"] {
   background: var(--brand);

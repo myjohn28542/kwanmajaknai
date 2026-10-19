@@ -11,7 +11,15 @@ import {
 } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { columnHeightM, columnPolygon, pathSampler, puffFractions } from "../lib/geo3d";
+import {
+  bearingDeg,
+  columnHeightM,
+  columnPolygon,
+  lerpBearing,
+  pathSampler,
+  puffFractions,
+  smoothstep,
+} from "../lib/geo3d";
 import type { HotspotPoint, Snapshot, TambonSummary } from "../lib/types";
 
 // MapLibre 6 loads its worker from a sibling file next to the module; point it at the
@@ -51,6 +59,9 @@ const PITCH_3D = 55;
 const BEARING_3D = -12;
 const PUFFS = 14;
 const PUFF_CYCLE_MS = 7000;
+const FLIGHT_MS = 14000;
+const FLIGHT_ZOOM = 10.3;
+const FLIGHT_PITCH = 64;
 const AGE_COLOR = ["step", ["get", "age"], "#b91c1c", 6, "#ea580c", 24, "#f59e0b", 48, "#a8a29e"];
 
 type Props = {
@@ -62,6 +73,12 @@ type Props = {
   onPick?: (lat: number, lon: number) => void;
   interactive?: boolean;
   onIdle?: () => void;
+  /** viewer's own position from the Geolocation API (never leaves the browser) */
+  userLoc?: [number, number] | null;
+  /** bump to start / stop the camera flight along the smoke path */
+  playToken?: number;
+  stopToken?: number;
+  onPlayingChange?: (playing: boolean) => void;
 };
 
 const empty = (): GeoJSON.FeatureCollection => ({ type: "FeatureCollection", features: [] });
@@ -116,7 +133,7 @@ function addLayers(map: MlMap) {
     firstSymbol,
   );
   if (!map.hasImage("kwan-arrow")) map.addImage("kwan-arrow", arrowImage());
-  for (const id of ["tambons", "hotspots", "columns", "top", "puffs", "selected"]) {
+  for (const id of ["tambons", "hotspots", "columns", "top", "puffs", "selected", "me"]) {
     map.addSource(id, { type: "geojson", data: empty() });
   }
   map.addSource("traj", { type: "geojson", data: empty(), lineMetrics: true });
@@ -226,6 +243,18 @@ function addLayers(map: MlMap) {
     source: "selected",
     paint: { "circle-radius": 8, "circle-color": "#2563eb", "circle-stroke-color": "#fff", "circle-stroke-width": 3 },
   });
+  map.addLayer({
+    id: "me-halo",
+    type: "circle",
+    source: "me",
+    paint: { "circle-radius": 18, "circle-color": "#16a34a", "circle-opacity": 0.2, "circle-pitch-alignment": "map" },
+  });
+  map.addLayer({
+    id: "me",
+    type: "circle",
+    source: "me",
+    paint: { "circle-radius": 6, "circle-color": "#16a34a", "circle-stroke-color": "#fff", "circle-stroke-width": 2.5 },
+  });
 }
 
 function setData(map: MlMap, id: string, data: GeoJSON.FeatureCollection) {
@@ -270,6 +299,10 @@ export function MapView({
   onPick,
   interactive = true,
   onIdle,
+  userLoc = null,
+  playToken = 0,
+  stopToken = 0,
+  onPlayingChange,
 }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -280,6 +313,11 @@ export function MapView({
   const pickRef = useRef(onPick);
   pickRef.current = onPick;
   const sampler = useRef<((f: number) => [number, number]) | null>(null);
+  const userLocRef = useRef(userLoc);
+  userLocRef.current = userLoc;
+  const playingRef = useRef(onPlayingChange);
+  playingRef.current = onPlayingChange;
+  const flight = useRef<{ raf: number; off: () => void } | null>(null);
 
   const render = () => {
     const map = mapRef.current;
@@ -302,6 +340,8 @@ export function MapView({
       ),
     );
     setData(map, "selected", fc(selected ? [point(selected.lon, selected.lat)] : []));
+    const me = userLocRef.current;
+    setData(map, "me", fc(me ? [point(me[0], me[1])] : []));
     setData(
       map,
       "top",
@@ -347,6 +387,44 @@ export function MapView({
     setData(map, "puffs", fc(puffFractions(PUFFS, phase).map((f) => point(...at(f), { f }))));
   };
 
+  const stopFlight = (notify = true) => {
+    if (!flight.current) return;
+    cancelAnimationFrame(flight.current.raf);
+    flight.current.off();
+    flight.current = null;
+    if (notify) playingRef.current?.(false);
+  };
+
+  // Cinematic camera that rides the smoke from the fires to the tambon, then returns to
+  // the overview. Any touch / drag / wheel hands control back to the viewer.
+  const startFlight = () => {
+    const map = mapRef.current;
+    const at = sampler.current;
+    if (!map || !ready.current || !at) return;
+    stopFlight(false);
+    let bearing = bearingDeg(at(0), at(0.05));
+    map.jumpTo({ center: at(0), zoom: FLIGHT_ZOOM, pitch: FLIGHT_PITCH, bearing });
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const u = Math.min((now - t0) / FLIGHT_MS, 1);
+      const f = smoothstep(u);
+      const target = bearingDeg(at(Math.max(f - 0.02, 0)), at(Math.min(f + 0.06, 1)));
+      bearing = lerpBearing(bearing, target, 0.05);
+      map.jumpTo({ center: at(f), zoom: FLIGHT_ZOOM, pitch: FLIGHT_PITCH, bearing });
+      if (u < 1) {
+        flight.current!.raf = requestAnimationFrame(step);
+      } else {
+        stopFlight();
+        render(); // ease back to the overview
+      }
+    };
+    const cancel = () => stopFlight();
+    const events = ["mousedown", "touchstart", "wheel"] as const;
+    events.forEach((ev) => map.on(ev, cancel));
+    flight.current = { raf: requestAnimationFrame(step), off: () => events.forEach((ev) => map.off(ev, cancel)) };
+    playingRef.current?.(true);
+  };
+
   useEffect(() => {
     const map = new MlMap({
       container: el.current!,
@@ -378,6 +456,7 @@ export function MapView({
     if (interactive && !reducedMotion()) raf = requestAnimationFrame(tick);
 
     return () => {
+      stopFlight(false);
       cancelAnimationFrame(raf);
       ready.current = false;
       map.remove();
@@ -386,7 +465,25 @@ export function MapView({
   }, []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(render, [tambons, selected, snapshot, hotspots, mode]);
+  useEffect(() => {
+    stopFlight();
+    render();
+  }, [tambons, selected, snapshot, hotspots, mode]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && ready.current) setData(map, "me", fc(userLoc ? [point(userLoc[0], userLoc[1])] : []));
+  }, [userLoc]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (playToken) startFlight();
+  }, [playToken]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (stopToken) stopFlight();
+  }, [stopToken]);
 
   return <div ref={el} className="map" />;
 }
