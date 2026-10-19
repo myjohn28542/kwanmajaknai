@@ -24,6 +24,11 @@ const KEY = import.meta.env.VITE_MAPTILER_KEY as string | undefined;
 const STYLE = KEY
   ? `https://api.maptiler.com/maps/dataviz/style.json?key=${KEY}`
   : "https://tiles.openfreemap.org/styles/positron";
+// Hypsometric tint for 3D: river plains green, foothills tan, ridges brown.
+const RELIEF = [
+  "interpolate", ["linear"], ["elevation"],
+  0, "#a7c99a", 300, "#c9dca8", 600, "#e6dfb4", 1000, "#d9b98c", 1500, "#b98f6a", 2200, "#8f6f55",
+];
 // Elevation: MapTiler when keyed, else the free Mapzen/Tilezen terrain tiles on AWS Open Data.
 const DEM: RasterDEMSourceSpecification = KEY
   ? { type: "raster-dem", url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${KEY}` }
@@ -82,26 +87,57 @@ function addLayers(map: MlMap) {
   // Separate DEM sources for terrain and hillshade, as MapLibre recommends.
   map.addSource("dem-terrain", DEM);
   map.addSource("dem-shade", DEM);
+  map.addSource("dem-relief", DEM);
   const firstSymbol = map.getStyle().layers.find((l) => l.type === "symbol")?.id;
+  map.addLayer(
+    {
+      id: "relief",
+      type: "color-relief",
+      source: "dem-relief",
+      layout: { visibility: "none" },
+      paint: { "color-relief-color": RELIEF as never, "color-relief-opacity": 0.75 },
+    } as never,
+    firstSymbol,
+  );
+  // Thai place names where OSM has them; fewer mixed scripts
+  for (const l of map.getStyle().layers) {
+    if (l.type === "symbol" && (l.layout as Record<string, unknown> | undefined)?.["text-field"]) {
+      map.setLayoutProperty(l.id, "text-field", ["coalesce", ["get", "name:th"], ["get", "name:latin"], ["get", "name"]]);
+    }
+  }
   map.addLayer(
     {
       id: "hillshade",
       type: "hillshade",
       source: "dem-shade",
       layout: { visibility: "none" },
-      paint: { "hillshade-exaggeration": 0.35, "hillshade-shadow-color": "#5b6476" },
+      paint: { "hillshade-exaggeration": 0.5, "hillshade-shadow-color": "#4a3b2c", "hillshade-highlight-color": "#fffbe8" },
     },
     firstSymbol,
   );
   if (!map.hasImage("kwan-arrow")) map.addImage("kwan-arrow", arrowImage());
-  for (const id of ["tambons", "hotspots", "columns", "top", "traj", "puffs", "selected"]) {
+  for (const id of ["tambons", "hotspots", "columns", "top", "puffs", "selected"]) {
     map.addSource(id, { type: "geojson", data: empty() });
   }
+  map.addSource("traj", { type: "geojson", data: empty(), lineMetrics: true });
   map.addLayer({
     id: "tambons",
     type: "circle",
     source: "tambons",
     paint: { "circle-radius": 2.5, "circle-color": "#64748b", "circle-opacity": 0.45 },
+  });
+  map.addLayer({
+    id: "hot-glow",
+    type: "circle",
+    source: "hotspots",
+    filter: ["<=", ["get", "age"], 48],
+    paint: {
+      "circle-radius": ["interpolate", ["linear"], ["get", "frp"], 0, 9, 50, 18, 300, 28],
+      "circle-color": ["step", ["get", "age"], "#ff3b1f", 6, "#ff7a1a", 24, "#ffb020"] as never,
+      "circle-opacity": 0.3,
+      "circle-blur": 1,
+      "circle-pitch-alignment": "map",
+    },
   });
   map.addLayer({
     id: "hotspots",
@@ -116,11 +152,24 @@ function addLayers(map: MlMap) {
     },
   });
   map.addLayer({
+    id: "traj-glow",
+    type: "line",
+    source: "traj",
+    layout: { "line-cap": "round", "line-join": "round" },
+    paint: {
+      "line-width": ["interpolate", ["linear"], ["zoom"], 6, 10, 10, 26],
+      "line-blur": 10,
+      "line-opacity": 0.45,
+      // fire-coloured at the source end, smoke-grey arriving at the tambon
+      "line-gradient": ["interpolate", ["linear"], ["line-progress"], 0, "#f97316", 0.5, "#a8a29e", 1, "#64748b"] as never,
+    },
+  });
+  map.addLayer({
     id: "traj-line",
     type: "line",
     source: "traj",
     layout: { "line-cap": "round", "line-join": "round" },
-    paint: { "line-color": "#1e3a8a", "line-width": 3, "line-opacity": 0.8 },
+    paint: { "line-color": "#1e3a8a", "line-width": 2.5, "line-opacity": 0.9 },
   });
   map.addLayer({
     id: "traj-arrows",
@@ -189,12 +238,25 @@ const point = (lon: number, lat: number, props: Record<string, unknown> = {}): G
   geometry: { type: "Point", coordinates: [lon, lat] },
 });
 
+const SKY = {
+  "sky-color": "#9cc7f0",
+  "horizon-color": "#eef4fb",
+  "fog-color": "#f4f1ea",
+  "sky-horizon-blend": 0.6,
+  "horizon-fog-blend": 0.6,
+  "fog-ground-blend": 0.4,
+  "atmosphere-blend": 0.6,
+};
+
 function applyMode(map: MlMap, mode: MapMode) {
   const is3d = mode === "3d";
+  const vis = (id: string, on: boolean) => map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
   map.setTerrain(is3d ? { source: "dem-terrain", exaggeration: EXAGGERATION } : null);
-  map.setLayoutProperty("hillshade", "visibility", is3d ? "visible" : "none");
-  map.setLayoutProperty("columns", "visibility", is3d ? "visible" : "none");
-  map.setLayoutProperty("hotspots", "visibility", is3d ? "none" : "visible");
+  map.setSky((is3d ? SKY : {}) as never);
+  vis("hillshade", is3d);
+  vis("relief", is3d);
+  vis("columns", is3d);
+  vis("tambons", !is3d);
 }
 
 const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -230,10 +292,12 @@ export function MapView({
       map,
       "columns",
       fc(
-        hotspots.map(([lon, lat, frp, age]) => ({
+        // Only the fires that actually feed this tambon's smoke stand up as columns;
+        // every other fire stays a glowing dot so busy days do not turn into a bar chart.
+        (snapshot?.status === "ok" ? snapshot.hotspots : []).map((h) => ({
           type: "Feature",
-          properties: { age, h: columnHeightM(frp) },
-          geometry: { type: "Polygon", coordinates: columnPolygon(lon, lat, 0.7) },
+          properties: { age: h.age_h, h: Math.round(columnHeightM(h.frp) * 1.6) },
+          geometry: { type: "Polygon", coordinates: columnPolygon(h.lon, h.lat, 0.6) },
         })),
       ),
     );

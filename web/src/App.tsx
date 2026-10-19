@@ -130,7 +130,7 @@ export default function App() {
             <span><i className="sw" style={{ background: "#a8a29e" }} />เก่ากว่า</span>
             <span><i className="ln" />เส้นทางลมย้อนหลัง</span>
             <span><i className="puff" />ควันเคลื่อนตามลม</span>
-            {mode === "3d" && <span>แท่งยิ่งสูง = ไฟยิ่งแรง (FRP)</span>}
+            {mode === "3d" && <span>แท่ง = ไฟที่เป็นต้นควันหลัก (ยิ่งสูงยิ่งแรง)</span>}
           </div>
           <p className="small muted hint">แตะบนแผนที่เพื่อเลือกตำบลที่ใกล้ที่สุด</p>
         </div>
