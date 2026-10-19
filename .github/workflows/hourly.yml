@@ -58,6 +58,27 @@ jobs:
           uv run python run.py fetch
           uv run python run.py compute --backfill "${{ github.event.inputs.backfill || '1' }}"
 
+      # Ship the new numbers first (~3 min in); share images follow in a second deploy.
+      # Until then the site serves the previous hour's PNGs, kept in the state cache.
+      - name: Build
+        run: cd web && npm run build
+
+      - name: Deploy site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: cd web && npx --yes wrangler@4 pages deploy dist --project-name "${{ vars.CF_PAGES_PROJECT || 'kwanmajaknai' }}" --branch main
+
+      - name: Render share images
+        run: cd pipeline && uv run python render.py
+
+      - name: Deploy share images
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: cd web && npx --yes wrangler@4 pages deploy dist --project-name "${{ vars.CF_PAGES_PROJECT || 'kwanmajaknai' }}" --branch main
+
+      # Last, so the cache also carries this hour's PNGs (render writes into web/public/data).
       - name: Save state
         if: always()
         uses: actions/cache/save@v4
@@ -66,14 +87,3 @@ jobs:
             pipeline/cache
             web/public/data
           key: state-${{ github.run_id }}
-
-      - name: Build + render
-        run: |
-          cd web && npm run build
-          cd ../pipeline && uv run python render.py
-
-      - name: Deploy to Cloudflare Pages
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: cd web && npx --yes wrangler@4 pages deploy dist --project-name "${{ vars.CF_PAGES_PROJECT || 'kwanmajaknai' }}" --branch main
