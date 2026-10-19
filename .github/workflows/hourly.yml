@@ -2,7 +2,9 @@ name: hourly
 
 on:
   schedule:
-    - cron: "20 * * * *" # :20 every hour (UTC; FIRMS NRT usually lands within ~3 h)
+    # :20 every hour (UTC). FIRMS NRT usually lands within ~3 h of overpass. GitHub may
+    # delay scheduled runs under load; a run takes ~15 min, mostly the 3D share renders.
+    - cron: "20 * * * *"
   workflow_dispatch:
     inputs:
       backfill:
