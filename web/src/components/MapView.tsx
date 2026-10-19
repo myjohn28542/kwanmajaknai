@@ -20,7 +20,7 @@ import {
   puffFractions,
   smoothstep,
 } from "../lib/geo3d";
-import { pmIndex, SKIES } from "../lib/island";
+import { compass8, pmIndex, SKIES } from "../lib/island";
 import type { HotspotPoint, Snapshot, TambonSummary } from "../lib/types";
 
 // MapLibre 6 loads its worker from a sibling file next to the module; point it at the
@@ -69,9 +69,9 @@ const IDLE_BEFORE_ORBIT_MS = 2500;
 const GROW_MS = 1300;
 const GLOW_RADIUS = ["interpolate", ["linear"], ["get", "frp"], 0, 9, 50, 18, 300, 28];
 const PUFF_CYCLE_MS = 7000;
-const FLIGHT_MS = 14000;
-const FLIGHT_ZOOM = 10.3;
-const FLIGHT_PITCH = 64;
+const FLIGHT_MS = 16000;
+const FLIGHT_ZOOM = 8.7; // high enough to see the mountains around the path, and tiles keep up
+const FLIGHT_PITCH = 58;
 const AGE_COLOR = ["step", ["get", "age"], "#b91c1c", 6, "#ea580c", 24, "#f59e0b", 48, "#a8a29e"];
 
 type Props = {
@@ -147,7 +147,11 @@ function addLayers(map: MlMap) {
     firstSymbol,
   );
   if (!map.hasImage("kwan-arrow")) map.addImage("kwan-arrow", arrowImage());
-  for (const id of ["tambons", "hotspots", "columns", "top", "puffs", "selected", "me"]) {
+  // No village / hamlet names: cleaner at flight altitude, and the site never names villages.
+  for (const id of ["label_village", "label_other"]) {
+    if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
+  }
+  for (const id of ["tambons", "hotspots", "columns", "top", "puffs", "selected", "me", "head"]) {
     map.addSource(id, { type: "geojson", data: empty() });
   }
   map.addSource("traj", { type: "geojson", data: empty(), lineMetrics: true });
@@ -257,6 +261,31 @@ function addLayers(map: MlMap) {
     source: "selected",
     paint: { "circle-radius": 8, "circle-color": "#2563eb", "circle-stroke-color": "#fff", "circle-stroke-width": 3 },
   });
+  // glowing smoke "comet" that leads the line while the camera rides along
+  map.addLayer({
+    id: "head-glow",
+    type: "circle",
+    source: "head",
+    paint: {
+      "circle-radius": 36,
+      "circle-color": ["interpolate", ["linear"], ["get", "f"], 0, "#f97316", 0.5, "#a8a29e", 1, "#64748b"],
+      "circle-opacity": 0.6,
+      "circle-blur": 1,
+      "circle-pitch-alignment": "map",
+    },
+  });
+  map.addLayer({
+    id: "head",
+    type: "circle",
+    source: "head",
+    paint: {
+      "circle-radius": 9,
+      "circle-color": ["interpolate", ["linear"], ["get", "f"], 0, "#fb923c", 1, "#e2e8f0"],
+      "circle-stroke-color": "#fff",
+      "circle-stroke-width": 2,
+      "circle-pitch-alignment": "map",
+    },
+  });
   map.addLayer({
     id: "me-halo",
     type: "circle",
@@ -339,6 +368,8 @@ export function MapView({
   playingRef.current = onPlayingChange;
   const flight = useRef<{ raf: number; off: () => void } | null>(null);
   // animation state shared between render() and the frame loop
+  const forwardRef = useRef<[number, number][]>([]);
+  const caption = useRef<HTMLDivElement>(null);
   const anim = useRef({ scene: "", snap: "", growStart: 0, busyUntil: 0, swayT: 0, swayBase: 0, puffs: PUFFS });
 
   const render = () => {
@@ -373,6 +404,7 @@ export function MapView({
     // Draw from the oldest position toward the tambon so arrowheads and puffs follow the smoke.
     const forward = [...traj].reverse() as [number, number][];
     sampler.current = forward.length > 1 ? pathSampler(forward) : null;
+    forwardRef.current = forward;
     setData(
       map,
       "traj",
@@ -443,38 +475,77 @@ export function MapView({
   const stopFlight = (notify = true) => {
     if (!flight.current) return;
     cancelAnimationFrame(flight.current.raf);
+    clearTimeout(flight.current.raf);
     flight.current.off();
     flight.current = null;
     if (notify) playingRef.current?.(false);
   };
 
-  // Cinematic camera that rides the smoke from the fires to the tambon, then returns to
-  // the overview. Any touch / drag / wheel hands control back to the viewer.
+  // Story mode: the camera rides the smoke from the fires to the tambon in wind time (one
+  // trajectory hour per equal slice, so it speeds up where the wind was fast). The line
+  // draws itself behind a glowing head and a caption narrates. Any touch hands control back.
   const startFlight = () => {
     const map = mapRef.current;
-    const at = sampler.current;
-    if (!map || !ready.current || !at) return;
+    const path = forwardRef.current; // oldest position first, tambon last
+    if (!map || !ready.current || path.length < 2) return;
     stopFlight(false);
-    let bearing = bearingDeg(at(0), at(0.05));
+    const { snapshot, selected, pm } = latest.current;
+    const n = path.length - 1; // hours covered
+    const at = (x: number): [number, number] => {
+      const i = Math.min(Math.floor(x), n - 1);
+      const t = x - i;
+      return [path[i][0] + (path[i + 1][0] - path[i][0]) * t, path[i][1] + (path[i + 1][1] - path[i][1]) * t];
+    };
+    const source =
+      snapshot?.status === "ok" && snapshot.regions[0] ? `ควันเริ่มจากไฟในเขต${snapshot.regions[0].label_th}` : `อากาศเมื่อ ${n} ชม.ก่อน`;
+    const place = selected ? `ต.${selected.name_th}` : "ตำบลที่เลือก";
+    const say = (text: string) => {
+      if (caption.current && caption.current.textContent !== text) caption.current.textContent = text;
+    };
+    if (caption.current) caption.current.hidden = false;
+    map.setLayoutProperty("puffs", "visibility", "none");
+    let bearing = bearingDeg(at(0), at(Math.min(2, n)));
     map.jumpTo({ center: at(0), zoom: FLIGHT_ZOOM, pitch: FLIGHT_PITCH, bearing });
     const t0 = performance.now();
     const step = (now: number) => {
       const u = Math.min((now - t0) / FLIGHT_MS, 1);
-      const f = smoothstep(u);
-      const target = bearingDeg(at(Math.max(f - 0.02, 0)), at(Math.min(f + 0.06, 1)));
-      bearing = lerpBearing(bearing, target, 0.05);
-      map.jumpTo({ center: at(f), zoom: FLIGHT_ZOOM, pitch: FLIGHT_PITCH, bearing });
+      const x = smoothstep(u) * n;
+      const here = at(x);
+      const ahead = at(Math.min(x + 1.5, n));
+      if (here[0] !== ahead[0] || here[1] !== ahead[1]) bearing = lerpBearing(bearing, bearingDeg(here, ahead), 0.04);
+      map.jumpTo({ center: here, zoom: FLIGHT_ZOOM, pitch: FLIGHT_PITCH, bearing });
+      const drawn = [...path.slice(0, Math.floor(x) + 1), here];
+      setData(map, "traj", fc([{ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: drawn } }]));
+      setData(map, "head", fc([point(here[0], here[1], { f: x / n })]));
+      const hoursBack = Math.round(n - x);
+      if (u < 0.1) say(source);
+      else if (hoursBack > 0) say(`⏱ ${hoursBack} ชม.ก่อน · ลมพาอากาศไปทาง${compass8(bearing)}`);
+      else say(`ถึง ${place} · ตอนนี้${pm == null ? "" : ` PM2.5 ${Math.round(pm)}`}`);
       if (u < 1) {
         flight.current!.raf = requestAnimationFrame(step);
       } else {
-        stopFlight();
-        render(); // ease back to the overview
+        // hold the arrival caption a moment, then ease back to the overview
+        flight.current!.raf = window.setTimeout(() => {
+          stopFlight();
+          render();
+        }, 1800) as unknown as number;
       }
     };
-    const cancel = () => stopFlight();
+    const cancel = () => {
+      stopFlight();
+      render();
+    };
     const events = ["mousedown", "touchstart", "wheel"] as const;
     events.forEach((ev) => map.on(ev, cancel));
-    flight.current = { raf: requestAnimationFrame(step), off: () => events.forEach((ev) => map.off(ev, cancel)) };
+    flight.current = {
+      raf: requestAnimationFrame(step),
+      off: () => {
+        events.forEach((ev) => map.off(ev, cancel));
+        setData(map, "head", empty());
+        map.setLayoutProperty("puffs", "visibility", "visible");
+        if (caption.current) caption.current.hidden = true;
+      },
+    };
     playingRef.current?.(true);
   };
 
@@ -566,5 +637,10 @@ export function MapView({
     if (stopToken) stopFlight();
   }, [stopToken]);
 
-  return <div ref={el} className="map" />;
+  return (
+    <>
+      <div ref={el} className="map" />
+      <div ref={caption} className="flight-caption" hidden aria-live="polite" />
+    </>
+  );
 }
