@@ -71,3 +71,38 @@ def test_write_tambon_keeps_history(tmp_path):
     doc = output.write_tambon(tmp_path, tb, [{"t": "2026-11-20T06:00+07:00"}])
     assert [s["t"] for s in doc["snapshots"]] == ["2026-11-20T06:00+07:00", "2026-11-20T05:00+07:00"]
     assert np.isclose(doc["lat"], 19.86)
+
+
+def test_get_json_retries_on_timeouts(monkeypatch):
+    import requests
+
+    calls = []
+
+    class Ok:
+        status_code = 200
+
+        def json(self):
+            return [{"ok": True}]
+
+    def fake_get(url, params=None, timeout=None):
+        calls.append(1)
+        if len(calls) < 3:
+            raise requests.ReadTimeout("read timed out")
+        return Ok()
+
+    monkeypatch.setattr(meteo.requests, "get", fake_get)
+    monkeypatch.setattr(meteo, "BACKOFF_S", 0)
+    assert meteo.get_json("https://x", {}) == [{"ok": True}]
+    assert len(calls) == 3
+
+
+def test_get_json_gives_up(monkeypatch):
+    import requests
+
+    def boom(*a, **k):
+        raise requests.ConnectionError("down")
+
+    monkeypatch.setattr(meteo.requests, "get", boom)
+    monkeypatch.setattr(meteo, "BACKOFF_S", 0)
+    with pytest.raises(RuntimeError, match="after 4 attempts"):
+        meteo.get_json("https://x", {})

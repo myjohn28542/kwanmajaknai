@@ -68,12 +68,18 @@ def _write(path: Path, rows: list[dict]) -> None:
 
 
 def _get(url: str) -> str:
-    for attempt in range(3):
-        r = requests.get(url, timeout=120)
-        if r.status_code == 200 and not r.text.startswith("Invalid"):
-            return r.text
+    last = ""
+    for attempt in range(4):
+        try:
+            r = requests.get(url, timeout=90)
+            if r.status_code == 200 and not r.text.startswith("Invalid"):
+                return r.text
+            last = f"{r.status_code} {r.text[:200]}"
+        except requests.RequestException as e:
+            last = str(e)
         time.sleep(5 * (attempt + 1))
-    raise RuntimeError(f"FIRMS request failed: {r.status_code} {r.text[:200]}")
+    # never echo the URL: with a key it contains FIRMS_MAP_KEY
+    raise RuntimeError(f"FIRMS request failed: {last.replace(config.FIRMS_MAP_KEY or '\0', '***')}")
 
 
 def fetch(now: datetime) -> None:

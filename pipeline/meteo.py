@@ -38,6 +38,26 @@ def _points() -> list[tuple[float, float]]:
     return [(float(la), float(lo)) for la in lats for lo in lons]  # lat-major
 
 
+RETRIES = 4
+BACKOFF_S = 10
+
+
+def get_json(url: str, params: dict):
+    """GET with retries on timeouts, connection errors and non-200 responses."""
+    last: Exception | None = None
+    for attempt in range(RETRIES):
+        try:
+            r = requests.get(url, params=params, timeout=60)
+            if r.status_code == 200:
+                return r.json()
+            last = requests.HTTPError(f"{r.status_code} {r.text[:200]}")
+        except requests.RequestException as e:
+            last = e
+        if attempt < RETRIES - 1:
+            time.sleep(BACKOFF_S * (attempt + 1))
+    raise RuntimeError(f"GET {url} failed after {RETRIES} attempts: {last}")
+
+
 def get_multi(url: str, points: list[tuple[float, float]], params: dict) -> list[dict]:
     out: list[dict] = []
     for i in range(0, len(points), CHUNK):
@@ -45,13 +65,7 @@ def get_multi(url: str, points: list[tuple[float, float]], params: dict) -> list
         q = dict(params)
         q["latitude"] = ",".join(f"{la:g}" for la, _ in chunk)
         q["longitude"] = ",".join(f"{lo:g}" for _, lo in chunk)
-        for attempt in range(3):
-            r = requests.get(url, params=q, timeout=120)
-            if r.status_code == 200:
-                break
-            time.sleep(10 * (attempt + 1))
-        r.raise_for_status()
-        data = r.json()
+        data = get_json(url, q)
         out.extend(data if isinstance(data, list) else [data])
     if len(out) != len(points):
         raise RuntimeError(f"expected {len(points)} locations, got {len(out)}")

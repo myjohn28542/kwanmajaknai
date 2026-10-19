@@ -39,11 +39,25 @@ def floor_hour(dt: datetime) -> datetime:
 
 
 def fetch(now: datetime) -> None:
+    """Fetch every source; a failing source falls back to its previous cache.
+
+    The wind file spans past 3 days + 2 forecast days, so an hour-old copy still covers
+    the current hour. Only a source with no cache at all fails the run.
+    """
     t = time.time()
-    firms.fetch(now)
-    meteo.fetch(now)
-    airq.fetch(now, load_tambons())
-    print(f"fetch ok in {time.time() - t:.1f}s (FIRMS {'area API' if config.FIRMS_MAP_KEY else 'public CSV'})")
+    steps = [
+        ("FIRMS", lambda: firms.fetch(now), lambda: any(firms.DIR.glob("*/*.csv"))),
+        ("wind", lambda: meteo.fetch(now), lambda: any(meteo.DIR.glob("*.json"))),
+        ("PM2.5", lambda: airq.fetch(now, load_tambons()), lambda: True),  # display only
+    ]
+    for name, run_step, has_cache in steps:
+        try:
+            run_step()
+        except Exception as e:  # noqa: BLE001 - any failure: try the cache
+            if not has_cache():
+                raise
+            print(f"WARNING: {name} fetch failed, using previous cache: {e}")
+    print(f"fetch done in {time.time() - t:.1f}s (FIRMS {'area API' if config.FIRMS_MAP_KEY else 'public CSV'})")
 
 
 def load_hotspots(now: datetime, regions: RegionIndex) -> Hotspots:
