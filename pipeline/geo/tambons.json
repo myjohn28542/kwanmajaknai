@@ -1,0 +1,1118 @@
+[
+ {
+  "id": "TH570101",
+  "name_th": "เวียง",
+  "name_en": "Wiang",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.90809,
+  "lon": 99.8325
+ },
+ {
+  "id": "TH570102",
+  "name_th": "รอบเวียง",
+  "name_en": "Rop Wiang",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.89838,
+  "lon": 99.86269
+ },
+ {
+  "id": "TH570103",
+  "name_th": "บ้านดู่",
+  "name_en": "Ban Du",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.98329,
+  "lon": 99.83178
+ },
+ {
+  "id": "TH570104",
+  "name_th": "นางแล",
+  "name_en": "Nang Lae",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 20.02405,
+  "lon": 99.84814
+ },
+ {
+  "id": "TH570105",
+  "name_th": "แม่ข้าวต้ม",
+  "name_en": "Mae Khao Tom",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 20.05579,
+  "lon": 99.93958
+ },
+ {
+  "id": "TH570106",
+  "name_th": "แม่ยาว",
+  "name_en": "Mae Yao",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 20.00547,
+  "lon": 99.70345
+ },
+ {
+  "id": "TH570107",
+  "name_th": "สันทราย",
+  "name_en": "San Sai",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.85578,
+  "lon": 99.80598
+ },
+ {
+  "id": "TH570111",
+  "name_th": "แม่กรณ์",
+  "name_en": "Mae Kon",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.86756,
+  "lon": 99.7008
+ },
+ {
+  "id": "TH570112",
+  "name_th": "ห้วยชมภู",
+  "name_en": "Huai Chomphu",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.90763,
+  "lon": 99.60924
+ },
+ {
+  "id": "TH570113",
+  "name_th": "ห้วยสัก",
+  "name_en": "Huai Sak",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.76111,
+  "lon": 99.91978
+ },
+ {
+  "id": "TH570114",
+  "name_th": "ริมกก",
+  "name_en": "Rim Kok",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.96744,
+  "lon": 99.94442
+ },
+ {
+  "id": "TH570115",
+  "name_th": "ดอยลาน",
+  "name_en": "Doi Lan",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.68461,
+  "lon": 99.93953
+ },
+ {
+  "id": "TH570116",
+  "name_th": "ป่าอ้อดอนชัย",
+  "name_en": "Pa O Don Chai",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.80626,
+  "lon": 99.80523
+ },
+ {
+  "id": "TH570118",
+  "name_th": "ท่าสาย",
+  "name_en": "Tha Sai",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.83657,
+  "lon": 99.85597
+ },
+ {
+  "id": "TH570120",
+  "name_th": "ดอยฮาง",
+  "name_en": "Doi Hang",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 19.92615,
+  "lon": 99.71191
+ },
+ {
+  "id": "TH570121",
+  "name_th": "ท่าสุด",
+  "name_en": "Tha Sut",
+  "amphoe_th": "เมืองเชียงราย",
+  "amphoe_en": "Mueang Chiang Rai",
+  "lat": 20.07961,
+  "lon": 99.87361
+ },
+ {
+  "id": "TH570202",
+  "name_th": "เวียงชัย",
+  "name_en": "Wiang Chai",
+  "amphoe_th": "เวียงชัย",
+  "amphoe_en": "Wiang Chai",
+  "lat": 19.86303,
+  "lon": 99.90581
+ },
+ {
+  "id": "TH570203",
+  "name_th": "ผางาม",
+  "name_en": "Pha Ngam",
+  "amphoe_th": "เวียงชัย",
+  "amphoe_en": "Wiang Chai",
+  "lat": 19.88642,
+  "lon": 100.04098
+ },
+ {
+  "id": "TH570204",
+  "name_th": "เวียงเหนือ",
+  "name_en": "Wiang Nuea",
+  "amphoe_th": "เวียงชัย",
+  "amphoe_en": "Wiang Chai",
+  "lat": 19.94039,
+  "lon": 99.94629
+ },
+ {
+  "id": "TH570206",
+  "name_th": "ดอนศิลา",
+  "name_en": "Don Sila",
+  "amphoe_th": "เวียงชัย",
+  "amphoe_en": "Wiang Chai",
+  "lat": 19.80156,
+  "lon": 99.99941
+ },
+ {
+  "id": "TH570208",
+  "name_th": "เมืองชุม",
+  "name_en": "Mueang Chum",
+  "amphoe_th": "เวียงชัย",
+  "amphoe_en": "Wiang Chai",
+  "lat": 19.90594,
+  "lon": 99.97935
+ },
+ {
+  "id": "TH570301",
+  "name_th": "เวียง",
+  "name_en": "Wiang",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 20.26539,
+  "lon": 100.35507
+ },
+ {
+  "id": "TH570302",
+  "name_th": "สถาน",
+  "name_en": "Sathan",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 20.20142,
+  "lon": 100.37429
+ },
+ {
+  "id": "TH570303",
+  "name_th": "ครึ่ง",
+  "name_en": "Khrueng",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 20.06499,
+  "lon": 100.40807
+ },
+ {
+  "id": "TH570304",
+  "name_th": "บุญเรือง",
+  "name_en": "Bunrueang",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 19.9889,
+  "lon": 100.35264
+ },
+ {
+  "id": "TH570305",
+  "name_th": "ห้วยซ้อ",
+  "name_en": "Huai So",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 20.06052,
+  "lon": 100.29211
+ },
+ {
+  "id": "TH570308",
+  "name_th": "ศรีดอนชัย",
+  "name_en": "Si Don Chai",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 20.14093,
+  "lon": 100.37264
+ },
+ {
+  "id": "TH570310",
+  "name_th": "ริมโขง",
+  "name_en": "Rim Khong",
+  "amphoe_th": "เชียงของ",
+  "amphoe_en": "Chiang Khong",
+  "lat": 20.35527,
+  "lon": 100.30504
+ },
+ {
+  "id": "TH570401",
+  "name_th": "เวียง",
+  "name_en": "Wiang",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.69479,
+  "lon": 100.19704
+ },
+ {
+  "id": "TH570402",
+  "name_th": "งิ้ว",
+  "name_en": "Ngio",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.69051,
+  "lon": 100.08846
+ },
+ {
+  "id": "TH570403",
+  "name_th": "ปล้อง",
+  "name_en": "Plong",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.65524,
+  "lon": 100.07714
+ },
+ {
+  "id": "TH570404",
+  "name_th": "แม่ลอย",
+  "name_en": "Mae Loi",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.57018,
+  "lon": 100.05516
+ },
+ {
+  "id": "TH570405",
+  "name_th": "เชียงเคี่ยน",
+  "name_en": "Chiang Khian",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.61585,
+  "lon": 99.99107
+ },
+ {
+  "id": "TH570409",
+  "name_th": "ตับเต่า",
+  "name_en": "Tap Tao",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.78612,
+  "lon": 100.35102
+ },
+ {
+  "id": "TH570410",
+  "name_th": "หงาว",
+  "name_en": "Ngao",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.68739,
+  "lon": 100.28575
+ },
+ {
+  "id": "TH570411",
+  "name_th": "สันทรายงาม",
+  "name_en": "San Sai Ngam",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.75447,
+  "lon": 100.17557
+ },
+ {
+  "id": "TH570412",
+  "name_th": "ศรีดอนไชย",
+  "name_en": "Si Don Chai",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.59023,
+  "lon": 100.09948
+ },
+ {
+  "id": "TH570413",
+  "name_th": "หนองแรด",
+  "name_en": "Nong Raet",
+  "amphoe_th": "เทิง",
+  "amphoe_en": "Thoeng",
+  "lat": 19.61575,
+  "lon": 100.14377
+ },
+ {
+  "id": "TH570501",
+  "name_th": "สันมะเค็ด",
+  "name_en": "San Makhet",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.60491,
+  "lon": 99.86943
+ },
+ {
+  "id": "TH570502",
+  "name_th": "แม่อ้อ",
+  "name_en": "Mae O",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.65624,
+  "lon": 99.83405
+ },
+ {
+  "id": "TH570503",
+  "name_th": "ธารทอง",
+  "name_en": "Than Thong",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.71531,
+  "lon": 99.75392
+ },
+ {
+  "id": "TH570504",
+  "name_th": "สันติสุข",
+  "name_en": "Santi Suk",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.57506,
+  "lon": 99.78374
+ },
+ {
+  "id": "TH570505",
+  "name_th": "ดอยงาม",
+  "name_en": "Doi Ngam",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.5515,
+  "lon": 99.82115
+ },
+ {
+  "id": "TH570506",
+  "name_th": "หัวง้ม",
+  "name_en": "Hua Ngom",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.52883,
+  "lon": 99.78431
+ },
+ {
+  "id": "TH570507",
+  "name_th": "เจริญเมือง",
+  "name_en": "Charoen Mueang",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.62491,
+  "lon": 99.76647
+ },
+ {
+  "id": "TH570508",
+  "name_th": "ป่าหุ่ง",
+  "name_en": "Pa Hung",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.49317,
+  "lon": 99.64208
+ },
+ {
+  "id": "TH570509",
+  "name_th": "ม่วงคำ",
+  "name_en": "Muang Kham",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.49195,
+  "lon": 99.71257
+ },
+ {
+  "id": "TH570510",
+  "name_th": "ทรายขาว",
+  "name_en": "Sai Khao",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.65471,
+  "lon": 99.69088
+ },
+ {
+  "id": "TH570511",
+  "name_th": "สันกลาง",
+  "name_en": "San Klang",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.61128,
+  "lon": 99.674
+ },
+ {
+  "id": "TH570512",
+  "name_th": "แม่เย็น",
+  "name_en": "Mae Yen",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.45825,
+  "lon": 99.73133
+ },
+ {
+  "id": "TH570513",
+  "name_th": "เมืองพาน",
+  "name_en": "Mueang Phan",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.54104,
+  "lon": 99.73811
+ },
+ {
+  "id": "TH570514",
+  "name_th": "ทานตะวัน",
+  "name_en": "Than Tawan",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.46683,
+  "lon": 99.83478
+ },
+ {
+  "id": "TH570515",
+  "name_th": "เวียงห้าว",
+  "name_en": "Wiang Hao",
+  "amphoe_th": "พาน",
+  "amphoe_en": "Phan",
+  "lat": 19.52681,
+  "lon": 99.87532
+ },
+ {
+  "id": "TH570601",
+  "name_th": "ป่าแดด",
+  "name_en": "Pa Daet",
+  "amphoe_th": "ป่าแดด",
+  "amphoe_en": "Pa Daet",
+  "lat": 19.51039,
+  "lon": 100.01914
+ },
+ {
+  "id": "TH570602",
+  "name_th": "ป่าแงะ",
+  "name_en": "Pa Ngae",
+  "amphoe_th": "ป่าแดด",
+  "amphoe_en": "Pa Daet",
+  "lat": 19.57458,
+  "lon": 99.93183
+ },
+ {
+  "id": "TH570603",
+  "name_th": "สันมะค่า",
+  "name_en": "San Makha",
+  "amphoe_th": "ป่าแดด",
+  "amphoe_en": "Pa Daet",
+  "lat": 19.45927,
+  "lon": 100.02491
+ },
+ {
+  "id": "TH570605",
+  "name_th": "โรงช้าง",
+  "name_en": "Rong Chang",
+  "amphoe_th": "ป่าแดด",
+  "amphoe_en": "Pa Daet",
+  "lat": 19.49616,
+  "lon": 99.94874
+ },
+ {
+  "id": "TH570606",
+  "name_th": "ศรีโพธิ์เงิน",
+  "name_en": "Si Pho Ngoen",
+  "amphoe_th": "ป่าแดด",
+  "amphoe_en": "Pa Daet",
+  "lat": 19.43841,
+  "lon": 99.94982
+ },
+ {
+  "id": "TH570701",
+  "name_th": "แม่จัน",
+  "name_en": "Mae Chan",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.1349,
+  "lon": 99.89413
+ },
+ {
+  "id": "TH570702",
+  "name_th": "จันจว้า",
+  "name_en": "Chan Chawa",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.2438,
+  "lon": 99.97989
+ },
+ {
+  "id": "TH570703",
+  "name_th": "แม่คำ",
+  "name_en": "Mae Kham",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.25024,
+  "lon": 99.90316
+ },
+ {
+  "id": "TH570704",
+  "name_th": "ป่าซาง",
+  "name_en": "Pa Sang",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.17909,
+  "lon": 99.80895
+ },
+ {
+  "id": "TH570705",
+  "name_th": "สันทราย",
+  "name_en": "San Sai",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.16669,
+  "lon": 99.90193
+ },
+ {
+  "id": "TH570706",
+  "name_th": "ท่าข้าวเปลือก",
+  "name_en": "Tha Khao Plueak",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.16143,
+  "lon": 100.01427
+ },
+ {
+  "id": "TH570708",
+  "name_th": "ป่าตึง",
+  "name_en": "Pa Tueng",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.09879,
+  "lon": 99.72051
+ },
+ {
+  "id": "TH570710",
+  "name_th": "แม่ไร่",
+  "name_en": "Mae Rai",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.25494,
+  "lon": 99.86057
+ },
+ {
+  "id": "TH570711",
+  "name_th": "ศรีค้ำ",
+  "name_en": "Si Kham",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.20893,
+  "lon": 99.84597
+ },
+ {
+  "id": "TH570712",
+  "name_th": "จันจว้าใต้",
+  "name_en": "Chan Chawa Tai",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.22411,
+  "lon": 99.93049
+ },
+ {
+  "id": "TH570713",
+  "name_th": "จอมสวรรค์",
+  "name_en": "Chom Sawan",
+  "amphoe_th": "แม่จัน",
+  "amphoe_en": "Mae Chan",
+  "lat": 20.20016,
+  "lon": 99.90772
+ },
+ {
+  "id": "TH570801",
+  "name_th": "เวียง",
+  "name_en": "Wiang",
+  "amphoe_th": "เชียงแสน",
+  "amphoe_en": "Chiang Saen",
+  "lat": 20.31189,
+  "lon": 100.0774
+ },
+ {
+  "id": "TH570802",
+  "name_th": "ป่าสัก",
+  "name_en": "Pa Sak",
+  "amphoe_th": "เชียงแสน",
+  "amphoe_en": "Chiang Saen",
+  "lat": 20.28851,
+  "lon": 100.01741
+ },
+ {
+  "id": "TH570803",
+  "name_th": "บ้านแซว",
+  "name_en": "Ban Saeo",
+  "amphoe_th": "เชียงแสน",
+  "amphoe_en": "Chiang Saen",
+  "lat": 20.24672,
+  "lon": 100.19318
+ },
+ {
+  "id": "TH570804",
+  "name_th": "ศรีดอนมูล",
+  "name_en": "Si Don Mun",
+  "amphoe_th": "เชียงแสน",
+  "amphoe_en": "Chiang Saen",
+  "lat": 20.34336,
+  "lon": 100.00968
+ },
+ {
+  "id": "TH570805",
+  "name_th": "แม่เงิน",
+  "name_en": "Mae Ngoen",
+  "amphoe_th": "เชียงแสน",
+  "amphoe_en": "Chiang Saen",
+  "lat": 20.30144,
+  "lon": 100.25373
+ },
+ {
+  "id": "TH570806",
+  "name_th": "โยนก",
+  "name_en": "Yonok",
+  "amphoe_th": "เชียงแสน",
+  "amphoe_en": "Chiang Saen",
+  "lat": 20.24311,
+  "lon": 100.05234
+ },
+ {
+  "id": "TH570901",
+  "name_th": "แม่สาย",
+  "name_en": "Mae Sai",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.42771,
+  "lon": 99.90762
+ },
+ {
+  "id": "TH570902",
+  "name_th": "ห้วยไคร้",
+  "name_en": "Huai Khrai",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.29698,
+  "lon": 99.86745
+ },
+ {
+  "id": "TH570903",
+  "name_th": "เกาะช้าง",
+  "name_en": "Ko Chang",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.42168,
+  "lon": 99.96544
+ },
+ {
+  "id": "TH570904",
+  "name_th": "โป่งผา",
+  "name_en": "Pong Pha",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.36928,
+  "lon": 99.88679
+ },
+ {
+  "id": "TH570905",
+  "name_th": "ศรีเมืองชุม",
+  "name_en": "Si Mueang Chum",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.3836,
+  "lon": 99.95597
+ },
+ {
+  "id": "TH570906",
+  "name_th": "เวียงพางคำ",
+  "name_en": "Wiang Phang Kham",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.4084,
+  "lon": 99.88124
+ },
+ {
+  "id": "TH570908",
+  "name_th": "บ้านด้าย",
+  "name_en": "Ban Dai",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.31696,
+  "lon": 99.93493
+ },
+ {
+  "id": "TH570909",
+  "name_th": "โป่งงาม",
+  "name_en": "Pong Ngam",
+  "amphoe_th": "แม่สาย",
+  "amphoe_en": "Mae Sai",
+  "lat": 20.34306,
+  "lon": 99.84469
+ },
+ {
+  "id": "TH571001",
+  "name_th": "แม่สรวย",
+  "name_en": "Mae Suai",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.69042,
+  "lon": 99.56146
+ },
+ {
+  "id": "TH571002",
+  "name_th": "ป่าแดด",
+  "name_en": "Pa Daet",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.71846,
+  "lon": 99.41407
+ },
+ {
+  "id": "TH571003",
+  "name_th": "แม่พริก",
+  "name_en": "Mae Phrik",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.61147,
+  "lon": 99.57656
+ },
+ {
+  "id": "TH571004",
+  "name_th": "ศรีถ้อย",
+  "name_en": "Si Thoi",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.63349,
+  "lon": 99.38831
+ },
+ {
+  "id": "TH571005",
+  "name_th": "ท่าก๊อ",
+  "name_en": "Tha Ko",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.55199,
+  "lon": 99.40951
+ },
+ {
+  "id": "TH571006",
+  "name_th": "วาวี",
+  "name_en": "Wawi",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.83969,
+  "lon": 99.49426
+ },
+ {
+  "id": "TH571007",
+  "name_th": "เจดีย์หลวง",
+  "name_en": "Chedi Luang",
+  "amphoe_th": "แม่สรวย",
+  "amphoe_en": "Mae Suai",
+  "lat": 19.57393,
+  "lon": 99.54681
+ },
+ {
+  "id": "TH571101",
+  "name_th": "สันสลี",
+  "name_en": "San Sali",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.4557,
+  "lon": 99.45075
+ },
+ {
+  "id": "TH571102",
+  "name_th": "เวียง",
+  "name_en": "Wiang",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.36138,
+  "lon": 99.45427
+ },
+ {
+  "id": "TH571103",
+  "name_th": "บ้านโป่ง",
+  "name_en": "Ban Pong",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.30639,
+  "lon": 99.47154
+ },
+ {
+  "id": "TH571104",
+  "name_th": "ป่างิ้ว",
+  "name_en": "Pa Ngio",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.24389,
+  "lon": 99.40119
+ },
+ {
+  "id": "TH571105",
+  "name_th": "เวียงกาหลง",
+  "name_en": "Wiang Kalong",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.24248,
+  "lon": 99.51333
+ },
+ {
+  "id": "TH571106",
+  "name_th": "แม่เจดีย์",
+  "name_en": "Mae Chedi",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.16269,
+  "lon": 99.37716
+ },
+ {
+  "id": "TH571107",
+  "name_th": "แม่เจดีย์ใหม่",
+  "name_en": "Mae Chedi Mai",
+  "amphoe_th": "เวียงป่าเป้า",
+  "amphoe_en": "Wiang Pa Pao",
+  "lat": 19.09693,
+  "lon": 99.43851
+ },
+ {
+  "id": "TH571201",
+  "name_th": "แม่เปา",
+  "name_en": "Mae Pao",
+  "amphoe_th": "พญาเม็งราย",
+  "amphoe_en": "Phaya Mengrai",
+  "lat": 19.88966,
+  "lon": 100.11955
+ },
+ {
+  "id": "TH571202",
+  "name_th": "แม่ต๋ำ",
+  "name_en": "Mae Tam",
+  "amphoe_th": "พญาเม็งราย",
+  "amphoe_en": "Phaya Mengrai",
+  "lat": 19.93626,
+  "lon": 100.21366
+ },
+ {
+  "id": "TH571203",
+  "name_th": "ไม้ยา",
+  "name_en": "Mai Ya",
+  "amphoe_th": "พญาเม็งราย",
+  "amphoe_en": "Phaya Mengrai",
+  "lat": 19.76627,
+  "lon": 100.10791
+ },
+ {
+  "id": "TH571204",
+  "name_th": "เม็งราย",
+  "name_en": "Mengrai",
+  "amphoe_th": "พญาเม็งราย",
+  "amphoe_en": "Phaya Mengrai",
+  "lat": 19.8592,
+  "lon": 100.18465
+ },
+ {
+  "id": "TH571205",
+  "name_th": "ตาดควัน",
+  "name_en": "Tat Khwan",
+  "amphoe_th": "พญาเม็งราย",
+  "amphoe_en": "Phaya Mengrai",
+  "lat": 19.99092,
+  "lon": 100.17659
+ },
+ {
+  "id": "TH571301",
+  "name_th": "ม่วงยาย",
+  "name_en": "Muang Yai",
+  "amphoe_th": "เวียงแก่น",
+  "amphoe_en": "Wiang Kaen",
+  "lat": 20.11659,
+  "lon": 100.53576
+ },
+ {
+  "id": "TH571302",
+  "name_th": "ปอ",
+  "name_en": "Po",
+  "amphoe_th": "เวียงแก่น",
+  "amphoe_en": "Wiang Kaen",
+  "lat": 19.92825,
+  "lon": 100.44574
+ },
+ {
+  "id": "TH571303",
+  "name_th": "หล่ายงาว",
+  "name_en": "Lai Ngao",
+  "amphoe_th": "เวียงแก่น",
+  "amphoe_en": "Wiang Kaen",
+  "lat": 20.12891,
+  "lon": 100.48477
+ },
+ {
+  "id": "TH571304",
+  "name_th": "ท่าข้าม",
+  "name_en": "Tha Kham",
+  "amphoe_th": "เวียงแก่น",
+  "amphoe_en": "Wiang Kaen",
+  "lat": 20.04495,
+  "lon": 100.48879
+ },
+ {
+  "id": "TH571401",
+  "name_th": "ต้า",
+  "name_en": "Ta",
+  "amphoe_th": "ขุนตาล",
+  "amphoe_en": "Khun Tan",
+  "lat": 19.80601,
+  "lon": 100.23191
+ },
+ {
+  "id": "TH571402",
+  "name_th": "ป่าตาล",
+  "name_en": "Pa Tan",
+  "amphoe_th": "ขุนตาล",
+  "amphoe_en": "Khun Tan",
+  "lat": 19.84526,
+  "lon": 100.26756
+ },
+ {
+  "id": "TH571403",
+  "name_th": "ยางฮอม",
+  "name_en": "Yang Hom",
+  "amphoe_th": "ขุนตาล",
+  "amphoe_en": "Khun Tan",
+  "lat": 19.92435,
+  "lon": 100.31505
+ },
+ {
+  "id": "TH571501",
+  "name_th": "เทอดไทย",
+  "name_en": "Thoet Thai",
+  "amphoe_th": "แม่ฟ้าหลวง",
+  "amphoe_en": "Mae Fa Luang",
+  "lat": 20.30864,
+  "lon": 99.64576
+ },
+ {
+  "id": "TH571502",
+  "name_th": "แม่สลองใน",
+  "name_en": "Mae Salong Nai",
+  "amphoe_th": "แม่ฟ้าหลวง",
+  "amphoe_en": "Mae Fa Luang",
+  "lat": 20.27293,
+  "lon": 99.55515
+ },
+ {
+  "id": "TH571503",
+  "name_th": "แม่สลองนอก",
+  "name_en": "Mae Salong Nok",
+  "amphoe_th": "แม่ฟ้าหลวง",
+  "amphoe_en": "Mae Fa Luang",
+  "lat": 20.15633,
+  "lon": 99.63922
+ },
+ {
+  "id": "TH571504",
+  "name_th": "แม่ฟ้าหลวง",
+  "name_en": "Mae Fa Luang",
+  "amphoe_th": "แม่ฟ้าหลวง",
+  "amphoe_en": "Mae Fa Luang",
+  "lat": 20.28961,
+  "lon": 99.79015
+ },
+ {
+  "id": "TH571601",
+  "name_th": "ดงมะดะ",
+  "name_en": "Dong Mada",
+  "amphoe_th": "แม่ลาว",
+  "amphoe_en": "Mae Lao",
+  "lat": 19.73005,
+  "lon": 99.67437
+ },
+ {
+  "id": "TH571602",
+  "name_th": "จอมหมอกแก้ว",
+  "name_en": "Chom Mok Kaeo",
+  "amphoe_th": "แม่ลาว",
+  "amphoe_en": "Mae Lao",
+  "lat": 19.7524,
+  "lon": 99.74741
+ },
+ {
+  "id": "TH571603",
+  "name_th": "บัวสลี",
+  "name_en": "Bua Sali",
+  "amphoe_th": "แม่ลาว",
+  "amphoe_en": "Mae Lao",
+  "lat": 19.80725,
+  "lon": 99.75248
+ },
+ {
+  "id": "TH571604",
+  "name_th": "ป่าก่อดำ",
+  "name_en": "Pa Ko Dam",
+  "amphoe_th": "แม่ลาว",
+  "amphoe_en": "Mae Lao",
+  "lat": 19.78195,
+  "lon": 99.74154
+ },
+ {
+  "id": "TH571605",
+  "name_th": "โป่งแพร่",
+  "name_en": "Pong Phrae",
+  "amphoe_th": "แม่ลาว",
+  "amphoe_en": "Mae Lao",
+  "lat": 19.81645,
+  "lon": 99.65264
+ },
+ {
+  "id": "TH571701",
+  "name_th": "ทุ่งก่อ",
+  "name_en": "Thung Ko",
+  "amphoe_th": "เวียงเชียงรุ้ง",
+  "amphoe_en": "Wiang Chiang Rung",
+  "lat": 19.97216,
+  "lon": 100.04729
+ },
+ {
+  "id": "TH571702",
+  "name_th": "ดงมหาวัน",
+  "name_en": "Dong Mahawan",
+  "amphoe_th": "เวียงเชียงรุ้ง",
+  "amphoe_en": "Wiang Chiang Rung",
+  "lat": 20.04792,
+  "lon": 100.00976
+ },
+ {
+  "id": "TH571703",
+  "name_th": "ป่าซาง",
+  "name_en": "Pa Sang",
+  "amphoe_th": "เวียงเชียงรุ้ง",
+  "amphoe_en": "Wiang Chiang Rung",
+  "lat": 20.04249,
+  "lon": 100.12039
+ },
+ {
+  "id": "TH571801",
+  "name_th": "ปงน้อย",
+  "name_en": "Pong Noi",
+  "amphoe_th": "ดอยหลวง",
+  "amphoe_en": "Doi Luang",
+  "lat": 20.103,
+  "lon": 100.06904
+ },
+ {
+  "id": "TH571802",
+  "name_th": "โชคชัย",
+  "name_en": "Chok Chai",
+  "amphoe_th": "ดอยหลวง",
+  "amphoe_en": "Doi Luang",
+  "lat": 20.1326,
+  "lon": 100.17435
+ },
+ {
+  "id": "TH571803",
+  "name_th": "หนองป่าก่อ",
+  "name_en": "Nong Pa Ko",
+  "amphoe_th": "ดอยหลวง",
+  "amphoe_en": "Doi Luang",
+  "lat": 20.18115,
+  "lon": 100.13138
+ }
+]
