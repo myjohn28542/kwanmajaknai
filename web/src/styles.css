@@ -317,7 +317,7 @@ a {
 }
 @media (min-width: 900px) {
   .map {
-    height: calc(100vh - 120px);
+    height: min(calc(100vh - 120px), 760px);
   }
 }
 .legend {

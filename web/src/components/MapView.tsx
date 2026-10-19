@@ -60,8 +60,11 @@ const PITCH_3D = 62;
 const BEARING_3D = -12;
 const PUFFS = 14; // plus 4 per PM2.5 band: dustier hours get a thicker plume
 const INTRO_MS = 3200;
-const ORBIT_DEG_PER_S = 3;
-const ORBIT_MAX_S = 60; // stop turning by itself after a minute (battery)
+// Idle "sway": swing the bearing ±SWAY_DEG around where the viewer left it, so the whole
+// trajectory stays in frame (a full orbit swung its ends off-screen).
+const SWAY_DEG = 18;
+const SWAY_PERIOD_S = 20;
+const SWAY_MAX_S = 60; // stop moving by itself after a minute (battery)
 const IDLE_BEFORE_ORBIT_MS = 2500;
 const GROW_MS = 1300;
 const GLOW_RADIUS = ["interpolate", ["linear"], ["get", "frp"], 0, 9, 50, 18, 300, 28];
@@ -129,6 +132,8 @@ function addLayers(map: MlMap) {
   for (const l of map.getStyle().layers) {
     if (l.type === "symbol" && (l.layout as Record<string, unknown> | undefined)?.["text-field"]) {
       map.setLayoutProperty(l.id, "text-field", ["coalesce", ["get", "name:th"], ["get", "name:latin"], ["get", "name"]]);
+      // letter-spacing (used for region names) splits Thai vowels/tone marks off their consonants
+      map.setLayoutProperty(l.id, "text-letter-spacing", 0);
     }
   }
   map.addLayer(
@@ -334,7 +339,7 @@ export function MapView({
   playingRef.current = onPlayingChange;
   const flight = useRef<{ raf: number; off: () => void } | null>(null);
   // animation state shared between render() and the frame loop
-  const anim = useRef({ scene: "", snap: "", growStart: 0, busyUntil: 0, orbitSpent: 0, puffs: PUFFS });
+  const anim = useRef({ scene: "", snap: "", growStart: 0, busyUntil: 0, swayT: 0, swayBase: 0, puffs: PUFFS });
 
   const render = () => {
     const map = mapRef.current;
@@ -407,11 +412,12 @@ export function MapView({
         map.setPaintProperty("columns", "fill-extrusion-height", ["*", ["get", "h"], 0]);
       }
     }
-    if (newScene) a.orbitSpent = 0;
+    a.swayT = 0; // re-anchor the sway on the new framing
     if (pts.length > 1) {
       const b = new LngLatBounds(pts[0], pts[0]);
       pts.forEach((p) => b.extend(p));
-      const padding = is3d ? 60 : 40;
+      // tilted views squeeze the far edge, so leave more room at the top
+      const padding = is3d ? { top: 110, bottom: 50, left: 70, right: 110 } : { top: 40, bottom: 40, left: 40, right: 90 };
       if (animate && is3d && newScene) {
         // Cinematic intro: start high, flat and turned away, then swoop down and around.
         map.jumpTo({ center: b.getCenter(), zoom: Math.max(map.getZoom() - 1.5, 5.5), pitch: 0, bearing: camera.bearing - 50 });
@@ -494,6 +500,7 @@ export function MapView({
     // Any touch / drag / wheel / key from the viewer pauses the automatic orbit for a while.
     const busy = () => {
       anim.current.busyUntil = performance.now() + 12_000;
+      anim.current.swayT = 0;
     };
     for (const ev of ["mousedown", "touchstart", "wheel", "dragstart"] as const) map.on(ev, busy);
 
@@ -519,11 +526,12 @@ export function MapView({
         map.setPaintProperty("columns", "fill-extrusion-height", ["*", ["get", "h"], k]);
         if (k >= 1) a.growStart = 0;
       }
-      const orbiting =
-        latest.current.mode === "3d" && !flight.current && now > a.busyUntil && a.orbitSpent < ORBIT_MAX_S && !map.isMoving();
-      if (orbiting) {
-        a.orbitSpent += dt;
-        map.setBearing(map.getBearing() + ORBIT_DEG_PER_S * dt);
+      const swaying =
+        latest.current.mode === "3d" && !flight.current && now > a.busyUntil && a.swayT < SWAY_MAX_S && !map.isMoving();
+      if (swaying) {
+        if (a.swayT === 0) a.swayBase = map.getBearing();
+        a.swayT += dt;
+        map.setBearing(a.swayBase + SWAY_DEG * Math.sin((2 * Math.PI * a.swayT) / SWAY_PERIOD_S));
       }
     };
     if (interactive && !reducedMotion()) raf = requestAnimationFrame(tick);
