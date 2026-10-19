@@ -5,12 +5,14 @@ import { ShareButtons } from "./components/ShareButtons";
 import { TambonSearch } from "./components/TambonSearch";
 import { loadHotspots, loadIndex, loadTambon } from "./lib/data";
 import type { Hotspots, Index, TambonDoc } from "./lib/types";
+import type { MapMode } from "./components/MapView";
 import {
   DEFAULT_TAMBON,
   haversineKm,
   hotspotsAt,
   hoursBetween,
   loadSaved,
+  MODE_KEY,
   nearestTambon,
   save,
   tambonFromLocation,
@@ -30,6 +32,17 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState(() => tambonFromLocation(location.pathname, location.search) ?? loadSaved() ?? DEFAULT_TAMBON);
   const [doc, setDoc] = useState<TambonDoc | null>(null);
+  // 3D terrain costs more data and battery: start in 2D on phones, 3D on big screens.
+  const [mode, setMode] = useState<MapMode>(() => {
+    const saved = loadSaved(MODE_KEY);
+    if (saved === "2d" || saved === "3d") return saved;
+    return window.matchMedia?.("(min-width: 900px)").matches ? "3d" : "2d";
+  });
+  const toggleMode = () => {
+    const next = mode === "3d" ? "2d" : "3d";
+    setMode(next);
+    save(next, MODE_KEY);
+  };
   const [timeIdx, setTimeIdx] = useState(0);
 
   useEffect(() => {
@@ -103,7 +116,12 @@ export default function App() {
         </div>
         <div className="map-wrap">
           <Suspense fallback={<div className="map map-loading">กำลังโหลดแผนที่…</div>}>
-            <MapView tambons={tambons} selected={tambon} snapshot={snapshot} hotspots={shownHot} onPick={onPick} />
+            <div className="map-box">
+              <MapView tambons={tambons} selected={tambon} snapshot={snapshot} hotspots={shownHot} mode={mode} onPick={onPick} />
+              <button type="button" className="mode-toggle" onClick={toggleMode} aria-pressed={mode === "3d"}>
+                {mode === "3d" ? "ดูแบบ 2D" : "ดูแบบ 3D"}
+              </button>
+            </div>
           </Suspense>
           <div className="legend small">
             <span><i className="sw" style={{ background: "#b91c1c" }} />ไฟ ≤6 ชม.</span>
@@ -111,6 +129,8 @@ export default function App() {
             <span><i className="sw" style={{ background: "#f59e0b" }} />≤48 ชม.</span>
             <span><i className="sw" style={{ background: "#a8a29e" }} />เก่ากว่า</span>
             <span><i className="ln" />เส้นทางลมย้อนหลัง</span>
+            <span><i className="puff" />ควันเคลื่อนตามลม</span>
+            {mode === "3d" && <span>แท่งยิ่งสูง = ไฟยิ่งแรง (FRP)</span>}
           </div>
           <p className="small muted hint">แตะบนแผนที่เพื่อเลือกตำบลที่ใกล้ที่สุด</p>
         </div>

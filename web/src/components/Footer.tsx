@@ -44,6 +44,13 @@ export function Footer({ updatedAt }: { updatedAt?: string }) {
           (CC BY-IGO)
         </li>
         <li>แผนที่: OpenFreeMap / OpenMapTiles © OpenStreetMap contributors</li>
+        <li>
+          ความสูงภูมิประเทศ (3D):{" "}
+          <a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener">
+            Mapzen / Tilezen Terrain Tiles
+          </a>{" "}
+          บน AWS Open Data
+        </li>
       </ul>
       {updatedAt && <p className="small muted">อัปเดตล่าสุด {updatedAt.replace("T", " ").slice(0, 16)} น.</p>}
     </footer>

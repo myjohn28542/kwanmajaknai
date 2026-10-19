@@ -29,7 +29,7 @@ export function ShareView({
   return (
     <div className="shareview">
       <div className="shareview-map">
-        <MapView tambons={[]} selected={tambon} snapshot={snapshot} hotspots={hotspots} interactive={false} onIdle={onIdle} />
+        <MapView tambons={[]} selected={tambon} snapshot={snapshot} hotspots={hotspots} mode="3d" interactive={false} onIdle={onIdle} />
       </div>
       <div className="shareview-panel">
         <div className="shareview-brand">

@@ -96,7 +96,8 @@ per-tambon previews. `web/public/_headers` sets `/data/*` to a 5-minute cache.
 
 NASA FIRMS (VIIRS S-NPP / NOAA-20 / NOAA-21 NRT) · Open-Meteo.com (CC BY 4.0), including
 Copernicus CAMS for PM2.5 · GADM 4.1 · Natural Earth · OCHA/RTSD admin boundaries via HDX
-(CC BY-IGO) · OpenFreeMap / OpenMapTiles © OpenStreetMap contributors. The site footer
+(CC BY-IGO) · OpenFreeMap / OpenMapTiles © OpenStreetMap contributors · Mapzen/Tilezen terrain
+tiles on AWS Open Data (3D view). The site footer
 carries the same attributions and the disclaimer.
 
 ## Known limits

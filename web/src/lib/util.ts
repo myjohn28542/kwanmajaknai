@@ -104,17 +104,19 @@ export function tambonFromLocation(pathname: string, search: string): string | n
   return q && /^TH\d{6}$/.test(q) ? q : null;
 }
 
-export function loadSaved(): string | null {
+export const MODE_KEY = "kwan.mapMode";
+
+export function loadSaved(key = STORAGE_KEY): string | null {
   try {
-    return localStorage.getItem(STORAGE_KEY);
+    return localStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-export function save(id: string): void {
+export function save(value: string, key = STORAGE_KEY): void {
   try {
-    localStorage.setItem(STORAGE_KEY, id);
+    localStorage.setItem(key, value);
   } catch {
     /* private mode / blocked storage: just don't remember */
   }

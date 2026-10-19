@@ -412,3 +412,33 @@ a {
   color: var(--muted);
   background: #eef1f5;
 }
+.map-box {
+  position: relative;
+}
+.mode-toggle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgb(255 255 255 / 0.95);
+  color: var(--brand);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 0.15);
+  cursor: pointer;
+}
+.mode-toggle[aria-pressed="true"] {
+  background: var(--brand);
+  color: #fff;
+}
+.puff {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  background: radial-gradient(circle, rgb(71 85 105 / 0.7), rgb(71 85 105 / 0));
+}
