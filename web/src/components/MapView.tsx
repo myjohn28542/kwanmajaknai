@@ -56,9 +56,15 @@ const CHIANG_RAI: LngLatBoundsLike = [
 ];
 const LABEL_HOURS = [12, 24, 36, 48];
 const EXAGGERATION = 1.8;
-const PITCH_3D = 55;
+const PITCH_3D = 62;
 const BEARING_3D = -12;
-const PUFFS = 14;
+const PUFFS = 14; // plus 4 per PM2.5 band: dustier hours get a thicker plume
+const INTRO_MS = 3200;
+const ORBIT_DEG_PER_S = 3;
+const ORBIT_MAX_S = 60; // stop turning by itself after a minute (battery)
+const IDLE_BEFORE_ORBIT_MS = 2500;
+const GROW_MS = 1300;
+const GLOW_RADIUS = ["interpolate", ["linear"], ["get", "frp"], 0, 9, 50, 18, 300, 28];
 const PUFF_CYCLE_MS = 7000;
 const FLIGHT_MS = 14000;
 const FLIGHT_ZOOM = 10.3;
@@ -152,7 +158,7 @@ function addLayers(map: MlMap) {
     source: "hotspots",
     filter: ["<=", ["get", "age"], 48],
     paint: {
-      "circle-radius": ["interpolate", ["linear"], ["get", "frp"], 0, 9, 50, 18, 300, 28],
+      "circle-radius": GLOW_RADIUS as never,
       "circle-color": ["step", ["get", "age"], "#ff3b1f", 6, "#ff7a1a", 24, "#ffb020"] as never,
       "circle-opacity": 0.3,
       "circle-blur": 1,
@@ -327,6 +333,8 @@ export function MapView({
   const playingRef = useRef(onPlayingChange);
   playingRef.current = onPlayingChange;
   const flight = useRef<{ raf: number; off: () => void } | null>(null);
+  // animation state shared between render() and the frame loop
+  const anim = useRef({ scene: "", snap: "", growStart: 0, busyUntil: 0, orbitSpent: 0, puffs: PUFFS });
 
   const render = () => {
     const map = mapRef.current;
@@ -365,6 +373,13 @@ export function MapView({
       "traj",
       fc(forward.length > 1 ? [{ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: forward } }] : []),
     );
+    const band = pmIndex(latest.current.pm);
+    anim.current.puffs = PUFFS + 4 * band;
+    const m = 1 + 0.18 * band;
+    map.setPaintProperty("puffs", "circle-radius", ["interpolate", ["linear"], ["get", "f"], 0, 4 * m, 1, 13 * m]);
+    map.setPaintProperty("puffs", "circle-opacity", [
+      "interpolate", ["linear"], ["get", "f"], 0, 0.2, 0.15, 0.55 + 0.05 * band, 0.9, 0.5 + 0.05 * band, 1, 0,
+    ]);
     if (!sampler.current) setData(map, "puffs", empty());
     else if (!interactive || reducedMotion()) drawPuffs(0.37); // static frame for screenshots
     labels.current.forEach((m) => m.remove());
@@ -379,10 +394,33 @@ export function MapView({
     const pts: [number, number][] = [...traj, ...(snapshot?.hotspots ?? []).map((h) => [h.lon, h.lat] as [number, number])];
     if (selected) pts.push([selected.lon, selected.lat]);
     const camera = { pitch: is3d ? PITCH_3D : 0, bearing: is3d ? BEARING_3D : 0 };
+    const a = anim.current;
+    const animate = interactive && !reducedMotion();
+    const scene = `${selected?.id}|${mode}`;
+    const newScene = scene !== a.scene;
+    a.scene = scene;
+    const snapKey = `${selected?.id}|${snapshot?.t}`;
+    if (snapKey !== a.snap) {
+      a.snap = snapKey;
+      if (animate && is3d) {
+        a.growStart = performance.now(); // columns rise from the ground
+        map.setPaintProperty("columns", "fill-extrusion-height", ["*", ["get", "h"], 0]);
+      }
+    }
+    if (newScene) a.orbitSpent = 0;
     if (pts.length > 1) {
       const b = new LngLatBounds(pts[0], pts[0]);
       pts.forEach((p) => b.extend(p));
-      map.fitBounds(b, { ...camera, padding: is3d ? 60 : 40, maxZoom: 10, duration: interactive ? 700 : 0 });
+      const padding = is3d ? 60 : 40;
+      if (animate && is3d && newScene) {
+        // Cinematic intro: start high, flat and turned away, then swoop down and around.
+        map.jumpTo({ center: b.getCenter(), zoom: Math.max(map.getZoom() - 1.5, 5.5), pitch: 0, bearing: camera.bearing - 50 });
+        map.fitBounds(b, { ...camera, padding, maxZoom: 10, duration: INTRO_MS, easing: (t) => 1 - Math.pow(1 - t, 3) });
+        a.busyUntil = performance.now() + INTRO_MS + IDLE_BEFORE_ORBIT_MS;
+      } else {
+        map.fitBounds(b, { ...camera, padding, maxZoom: 10, duration: interactive ? 700 : 0 });
+        a.busyUntil = Math.max(a.busyUntil, performance.now() + 700 + IDLE_BEFORE_ORBIT_MS);
+      }
     } else if (selected) {
       map.jumpTo({ ...camera, center: [selected.lon, selected.lat], zoom: 9 });
     }
@@ -393,7 +431,7 @@ export function MapView({
     const map = mapRef.current;
     const at = sampler.current;
     if (!map || !at) return;
-    setData(map, "puffs", fc(puffFractions(PUFFS, phase).map((f) => point(...at(f), { f }))));
+    setData(map, "puffs", fc(puffFractions(anim.current.puffs, phase).map((f) => point(...at(f), { f }))));
   };
 
   const stopFlight = (notify = true) => {
@@ -453,14 +491,40 @@ export function MapView({
     });
     map.on("click", (e: { lngLat: { lat: number; lng: number } }) => pickRef.current?.(e.lngLat.lat, e.lngLat.lng));
 
-    // Smoke puffs drifting along the trajectory (~30 fps; rAF pauses in background tabs).
+    // Any touch / drag / wheel / key from the viewer pauses the automatic orbit for a while.
+    const busy = () => {
+      anim.current.busyUntil = performance.now() + 12_000;
+    };
+    for (const ev of ["mousedown", "touchstart", "wheel", "dragstart"] as const) map.on(ev, busy);
+
+    // One frame loop (~30 fps; rAF pauses in background tabs) for every ambient animation:
+    // smoke puffs, breathing fire glow, columns rising, and the slow 3D orbit.
     let raf = 0;
     let last = 0;
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      if (now - last < 33 || !ready.current || !sampler.current) return;
+      if (now - last < 33 || !ready.current) return;
+      const dt = last ? Math.min((now - last) / 1000, 0.1) : 0;
       last = now;
-      drawPuffs(now / PUFF_CYCLE_MS);
+      const a = anim.current;
+      if (sampler.current) drawPuffs(now / PUFF_CYCLE_MS);
+      // fresh fires (<= 6 h) breathe harder than older ones
+      const wave = Math.sin(now / 550);
+      map.setPaintProperty("hot-glow", "circle-radius", [
+        "*", ["case", ["<=", ["get", "age"], 6], 1.15 + 0.3 * wave, 1 + 0.1 * wave], GLOW_RADIUS,
+      ] as never);
+      map.setPaintProperty("hot-glow", "circle-opacity", 0.28 + 0.1 * wave);
+      if (a.growStart) {
+        const k = smoothstep((now - a.growStart) / GROW_MS);
+        map.setPaintProperty("columns", "fill-extrusion-height", ["*", ["get", "h"], k]);
+        if (k >= 1) a.growStart = 0;
+      }
+      const orbiting =
+        latest.current.mode === "3d" && !flight.current && now > a.busyUntil && a.orbitSpent < ORBIT_MAX_S && !map.isMoving();
+      if (orbiting) {
+        a.orbitSpent += dt;
+        map.setBearing(map.getBearing() + ORBIT_DEG_PER_S * dt);
+      }
     };
     if (interactive && !reducedMotion()) raf = requestAnimationFrame(tick);
 
